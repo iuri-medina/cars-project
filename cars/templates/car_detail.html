@@ -87,8 +87,10 @@
   <p><strong>Placa:</strong> {{ object.plate }}</p>
   <p><strong>Preço:</strong> R$ {{ object.price }}</p>
 </div>
+{% if user.is_authenticated %}
 <div class="buttons-container">
   <a href="{% url 'car_update' pk=object.pk %}"><button class="btn btn-primary">Editar</button></a>
   <a href="{% url 'car_delete' pk=object.pk %}"><button class="btn btn-danger">Remover</button></a>
 </div>
+{% endif %}
 {% endblock %}
