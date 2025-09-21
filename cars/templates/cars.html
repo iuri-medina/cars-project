@@ -108,8 +108,8 @@
     <button type="submit">Buscar</button>
 </form>
 
+{% if cars %}
 <div class="car-grid">
-    {% if cars %}
     {% for car in cars %}
     <a href="/car/{{ car.pk }}" class="card-link">
         <div class="car-card" onclick="">
@@ -123,8 +123,9 @@
         </div>
     </a>
     {% endfor %}
-    {% else %}
-    <p class="no-results">Nenhum carro encontrado.</p>
-    {% endif %}
 </div>
+<p>Carros em estoque: {{ car_inventory.cars_count }}</p>
+{% else %}
+<p class="no-results">Nenhum carro encontrado.</p>
+{% endif %}
 {% endblock %}

@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-lad23im)d%20c8kc7cxh!9-f0fca8ca6^f!-x(phjcn0phv)&_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -93,7 +93,7 @@ DATABASES = {
         'NAME': 'carros',
         'USER': 'postgres', 
         'PASSWORD': 'postgres',
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': '5432'
     }
 }
@@ -135,8 +135,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT =  os.path.join(BASE_DIR, 'static/')
+STATIC_URL = '/static/'
+STATIC_ROOT =  os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

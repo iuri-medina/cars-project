@@ -2,7 +2,7 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, D
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from cars.models import Car
+from cars.models import Car, CarInventory
 from cars.forms import CarForm
 
 class CarsView(ListView):
@@ -16,6 +16,11 @@ class CarsView(ListView):
         if search_model:
             cars = cars.filter(model__icontains=search_model)
         return cars
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['car_inventory'] = CarInventory.objects.first()
+        return context
 
 class CarView(DetailView):
     model = Car

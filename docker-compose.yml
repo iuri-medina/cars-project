@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: carros
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - default_bridge
+  
+  app:
+    build: .
+    restart: always
+    # command: python3 manage.py migrate
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - db
+    networks:
+      - default_bridge
+  
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/static
+      - media_volume:/media
+    depends_on:
+      - app
+    networks:
+      - default_bridge
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+
+networks:
+  default_bridge:
+    driver: bridge

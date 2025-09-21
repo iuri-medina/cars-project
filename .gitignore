@@ -1,4 +1,5 @@
 .DS_Store
-*.jpg
-*.jpeg
 venv
+media
+staticfiles
+postgres_data

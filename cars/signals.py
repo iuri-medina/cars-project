@@ -4,10 +4,14 @@ from django.dispatch import receiver
 from cars.models import Car, CarInventory
 
 def car_inventory_update():
-    cars_count = Car.objects.all().count()
-    cars_value = Car.objects.aggregate(
-        total_value=Sum('price')
-    )['total_value']
+    if Car.objects.first():
+        cars_count = Car.objects.all().count()
+        cars_value = Car.objects.aggregate(
+            total_value=Sum('price')
+        )['total_value']
+    else:
+        cars_count = 0
+        cars_value = 0.0
 
     CarInventory.objects.create(
         cars_count=cars_count,
