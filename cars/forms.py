@@ -1,5 +1,7 @@
 from django import forms
-from cars.models import Brand, Car
+from django.core.exceptions import ValidationError
+from django.forms import modelformset_factory, inlineformset_factory
+from cars.models import Brand, Car, CarImage
 
 class CarForm(forms.ModelForm):
     class Meta:
@@ -17,3 +19,32 @@ class CarForm(forms.ModelForm):
         if factory_year < 1975:
             self.add_error('factory_year', 'Não é possível cadastrar carros fabricados antes de 1975')
         return factory_year
+    
+class BaseCarImageFormSet(forms.BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        mains = 0
+        has_images = False
+        for form in self.forms:
+            if form.cleaned_data and not form.cleaned_data.get("DELETE", False):
+                # Verifica se tem imagem (seja nova ou existente)
+                if form.cleaned_data.get("image") or (hasattr(form, 'instance') and form.instance.pk and form.instance.image):
+                    has_images = True
+                    if form.cleaned_data.get("is_main", False):
+                        mains += 1
+        
+        # Só exige imagem principal se houver imagens
+        if has_images:
+            if mains == 0:
+                raise ValidationError("Selecione uma imagem principal.")
+            if mains > 1:
+                raise ValidationError("Apenas uma imagem pode ser principal.")
+
+
+CarImageFormSet = inlineformset_factory(
+    Car, CarImage,
+    fields=['image', 'is_main'],
+    extra=10,
+    can_delete=True,
+    formset=BaseCarImageFormSet
+)

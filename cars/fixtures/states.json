@@ -1,0 +1,137 @@
+[
+  {
+    "model": "cars.state",
+    "pk": 1,
+    "fields": { "state_code": "AC", "name": "Acre" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 2,
+    "fields": { "state_code": "AL", "name": "Alagoas" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 3,
+    "fields": { "state_code": "AP", "name": "Amapá" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 4,
+    "fields": { "state_code": "AM", "name": "Amazonas" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 5,
+    "fields": { "state_code": "BA", "name": "Bahia" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 6,
+    "fields": { "state_code": "CE", "name": "Ceará" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 7,
+    "fields": { "state_code": "DF", "name": "Distrito Federal" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 8,
+    "fields": { "state_code": "ES", "name": "Espírito Santo" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 9,
+    "fields": { "state_code": "GO", "name": "Goiás" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 10,
+    "fields": { "state_code": "MA", "name": "Maranhão" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 11,
+    "fields": { "state_code": "MT", "name": "Mato Grosso" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 12,
+    "fields": { "state_code": "MS", "name": "Mato Grosso do Sul" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 13,
+    "fields": { "state_code": "MG", "name": "Minas Gerais" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 14,
+    "fields": { "state_code": "PA", "name": "Pará" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 15,
+    "fields": { "state_code": "PB", "name": "Paraíba" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 16,
+    "fields": { "state_code": "PR", "name": "Paraná" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 17,
+    "fields": { "state_code": "PE", "name": "Pernambuco" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 18,
+    "fields": { "state_code": "PI", "name": "Piauí" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 19,
+    "fields": { "state_code": "RJ", "name": "Rio de Janeiro" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 20,
+    "fields": { "state_code": "RN", "name": "Rio Grande do Norte" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 21,
+    "fields": { "state_code": "RS", "name": "Rio Grande do Sul" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 22,
+    "fields": { "state_code": "RO", "name": "Rondônia" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 23,
+    "fields": { "state_code": "RR", "name": "Roraima" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 24,
+    "fields": { "state_code": "SC", "name": "Santa Catarina" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 25,
+    "fields": { "state_code": "SP", "name": "São Paulo" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 26,
+    "fields": { "state_code": "SE", "name": "Sergipe" }
+  },
+  {
+    "model": "cars.state",
+    "pk": 27,
+    "fields": { "state_code": "TO", "name": "Tocantins" }
+  }
+]

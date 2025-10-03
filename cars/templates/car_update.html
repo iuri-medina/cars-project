@@ -1,129 +1,747 @@
 {% extends "base.html" %}
+{% load form_tags %}
 
 {% block content %}
 
 <style>
-  form {
-    max-width: 800px;
+  .form-container {
+    max-width: 900px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: #f5f5f5;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    padding: 2rem;
   }
 
-  form h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
+  .form-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .form-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+
+  .form-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+  }
+
+  .form-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .form-section {
+    padding: 2rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .form-section:last-child {
+    border-bottom: none;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    padding: 1rem;
+    border: 2px solid #e8e8e8;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fafafa;
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .images-section {
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+    border: 2px dashed var(--primary-color);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .images-section:hover {
+    border-color: var(--secondary-color);
+    background: linear-gradient(135deg, #fff 0%, #f8f9ff 100%);
+  }
+
+  .upload-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+  }
+
+  .image-upload-area {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .image-slot {
+    position: relative;
+    aspect-ratio: 16/10;
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    overflow: hidden;
+  }
+
+  .image-slot:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .image-slot.has-image {
+    border-style: solid;
+    border-color: var(--success-color);
+  }
+
+  .image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .image-controls {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn-remove,
+  .btn-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .btn-remove {
+    background: rgba(220, 53, 69, 0.9);
+    color: white;
+    width: 28px;
+    height: 28px;
+  }
+
+  .btn-remove:hover {
+    background: #dc3545;
+    transform: scale(1.1);
+  }
+
+  .btn-main {
+    background: rgba(255, 193, 7, 0.9);
+    color: #000;
+    padding: 4px 8px;
+  }
+
+  .btn-main.active {
+    background: rgba(40, 167, 69, 0.9);
+    color: white;
+  }
+
+  .btn-main:hover {
+    transform: scale(1.05);
+  }
+
+  .upload-placeholder {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 2rem;
+  }
+
+  .upload-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .hidden-input {
+    display: none;
+  }
+
+  .main-image-indicator {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--success-color);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .submit-section {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    border: none;
+    padding: 1rem 3rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+  }
+
+  .btn-cancel {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 2px solid #e8e8e8;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    margin-right: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-cancel:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+  }
+
+  @media (max-width: 768px) {
+    .form-container {
+      padding: 1rem;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .image-upload-area {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    }
+  }
+
+  /* Estilos sem Bootstrap */
+  .btn {
+    display: inline-block;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    margin: 0 5px;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+
+  .btn-danger {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #5a6268;
+  }
+
+  .btn-lg {
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+
+  .text-center {
     text-align: center;
   }
 
-  table {
-    margin: 0 auto;
-    border-collapse: collapse;
-    width: 100%;
-    max-width: 600px;
-  }
-
-  th,
-  td {
-    padding: 4px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-
-  th {
-    background-color: #f2f2f2;
-  }
-
-  input[type="text"],
-  input[type="number"],
-  select,
-  textarea {
-    padding: 8px;
+  .text-muted {
+    color: #6c757d;
     font-size: 14px;
-    border: 2px solid #ddd;
-    border-radius: 4px;
-    width: 100%;
-    max-width: 300px;
-    margin-bottom: 8px;
-    transition: border-bottom-color 0.3s ease-in-out;
+    margin-bottom: 15px;
   }
 
-  input[type="text"]:focus,
-  input[type="number"]:focus,
-  select:focus,
-  textarea:focus {
-    outline: none;
-    border-bottom-color: #0096c7;
+  .alert {
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 15px;
   }
 
-  .btn {
-    background-color: #0096c7;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
+  .alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  .mt-3 {
+    margin-top: 1rem;
   }
 
   .buttons-container {
     display: flex;
     justify-content: center;
     margin-top: 20px;
+    gap: 10px;
+  }
+
+  h2 {
+    color: #333;
     margin-bottom: 20px;
+    text-align: center;
   }
 
-  .btn {
-    display: inline-block;
-    background-color: #0096c7;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 16px;
+  h3 {
+    color: #555;
+    margin-bottom: 15px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f5f5f5;
+    padding: 20px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  table td,
+  table th {
+    padding: 10px;
+    vertical-align: top;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-    margin: 0 10px;
-  }
-
-  .btn:hover {
-    background-color: #108eb8;
-  }
-
-  .btn-danger {
-    background-color: #d9534f;
-    text-decoration: none !important;
-  }
-
-  .btn-danger:hover {
-    background-color: #d2221c;
-  }
-
-  .error-message {
-    color: #d9534f;
     font-size: 14px;
-    margin-top: 5px;
   }
 
-  a {
-    text-decoration: none !important;
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+  }
+
+  .delete-checkbox {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+  }
+
+  .delete-checkbox label {
+    color: #856404;
+    font-weight: bold;
   }
 </style>
-<form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  <h1>Editar Carro</h1>
-  <table>
-    {{ form.as_table }}
-  </table>
-  <div>
-    <div class="buttons-container">
-      <input type="submit" value="Salvar Alterações" class="btn btn-primary">
-      <a href="{% url 'car_delete' pk=object.pk %}" class="btn btn-danger">Remover</a>
-      <a href="{% url 'car_detail' pk=object.pk %}" class="btn btn-secondary">Cancelar</a>
-    </div>
+
+<div class="form-container">
+  <div class="form-header">
+    <h1 class="form-title">Editar Veículo</h1>
+    <p class="form-subtitle">Atualize as informações do seu veículo</p>
   </div>
-</form>
+
+  <form method="post" enctype="multipart/form-data" id="car-form" class="form-card">
+    {% csrf_token %}
+
+    <div class="form-section">
+      <h2 class="section-title">
+        <span class="material-symbols-outlined">directions_car</span>
+        Informações do Veículo
+      </h2>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="{{ form.brand.id_for_label }}">Marca</label>
+          {{ form.brand|add_class:"form-select" }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.model.id_for_label }}">Modelo</label>
+          {{ form.model|add_class:"form-input" }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.factory_year.id_for_label }}">Ano de Fabricação</label>
+          {{ form.factory_year|add_class:"form-input" }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.model_year.id_for_label }}">Ano do Modelo</label>
+          {{ form.model_year|add_class:"form-input" }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.plate.id_for_label }}">Placa</label>
+          {{ form.plate|add_class:"form-input" }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.mileage.id_for_label }}">Quilometragem (km)</label>
+          {{ form.mileage|add_class:"form-input" }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.price.id_for_label }}">Preço (R$)</label>
+          {{ form.price|add_class:"form-input" }}
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="{{ form.state.id_for_label }}">Estado</label>
+          {{ form.state|add_class:"form-select" }}
+        </div>
+
+        <div class="form-group full-width">
+          <label class="form-label" for="{{ form.bio.id_for_label }}">Descrição</label>
+          {{ form.bio|add_class:"form-textarea" }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h2 class="section-title">
+        <span class="material-symbols-outlined">photo_camera</span>
+        Fotos do Veículo
+      </h2>
+
+      <div class="images-section">
+        <div class="upload-icon">
+          <span class="material-symbols-outlined">cloud_upload</span>
+        </div>
+        <h3>Gerenciar fotos do veículo</h3>
+        <p>Adicione até 10 fotos. Clique em "Principal" para definir a foto de capa.</p>
+        <p><small><span class="material-symbols-outlined" style="font-size: 1rem; vertical-align: middle;">smartphone</span> Arquivos HEIC (iPhone) serão automaticamente convertidos para JPEG.</small></p>
+
+        {{ formset.management_form }}
+
+        <div class="image-upload-area" id="image-upload-area">
+          {% for subform in formset %}
+          <div class="image-slot {% if subform.instance.image %}has-image{% endif %}" data-form-index="{{ forloop.counter0 }}">
+            {% if subform.instance.image %}
+            <img src="{{ subform.instance.image.url }}" alt="Preview" class="image-preview">
+            <div class="image-controls">
+              <button type="button" class="btn-main {% if subform.instance.is_main %}active{% endif %}" onclick="setMainImage({{ forloop.counter0 }})">
+                {% if subform.instance.is_main %}Principal{% else %}Principal{% endif %}
+              </button>
+              <button type="button" class="btn-remove" onclick="removeImage({{ forloop.counter0 }})">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            {% if subform.instance.is_main %}
+            <div class="main-image-indicator">PRINCIPAL</div>
+            {% endif %}
+            {% if subform.DELETE %}
+            <div class="delete-checkbox" style="display: none;">
+              {{ subform.DELETE }} {{ subform.DELETE.label_tag }}
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="upload-placeholder">
+              <div class="upload-icon">
+                <span class="material-symbols-outlined">add_photo_alternate</span>
+              </div>
+              <div>Clique para adicionar foto</div>
+            </div>
+            {% endif %}
+
+            <input type="file" class="hidden-input" accept="image/*,.heic,.HEIC" name="{{ subform.image.html_name }}" id="{{ subform.image.id_for_label }}">
+            <input type="checkbox" name="{{ subform.is_main.html_name }}" id="{{ subform.is_main.id_for_label }}" style="display: none;" {% if subform.instance.is_main %}checked{% endif %}>
+            {{ subform.id.as_hidden }}
+
+            {% if subform.non_field_errors %}
+            <div style="color: #dc3545; margin-top: 0.5rem; font-size: 0.875rem;">
+              {{ subform.non_field_errors }}
+            </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+
+        {% if formset.non_form_errors %}
+        <div style="color: #dc3545; margin-top: 1rem; text-align: center;">
+          {{ formset.non_form_errors }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="submit-section">
+      <a href="{% url 'car_detail' pk=object.pk %}" class="btn-cancel">
+        <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem;">arrow_back</span>
+        Cancelar
+      </a>
+      <button type="submit" class="btn-submit">
+        <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem;">save</span>
+        Salvar Alterações
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const imageSlots = document.querySelectorAll('.image-slot');
+    let mainImageIndex = null;
+
+    // Encontrar imagem principal existente
+    imageSlots.forEach((slot, index) => {
+      const isMainBtn = slot.querySelector('.btn-main.active');
+      if (isMainBtn) {
+        mainImageIndex = index;
+      }
+    });
+
+    imageSlots.forEach((slot, index) => {
+      const input = slot.querySelector('input[type="file"]');
+      const isMainInput = slot.querySelector('input[type="checkbox"][name$="-is_main"]'); slot.addEventListener('click', function (e) {
+        if (!e.target.classList.contains('btn-remove') &&
+          !e.target.classList.contains('btn-main') &&
+          !e.target.type === 'checkbox') {
+          input.click();
+        }
+      });
+
+      input.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            displayImage(slot, e.target.result, index);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+
+    function displayImage(slot, src, index) {
+      slot.classList.add('has-image');
+
+      // Preservar os inputs existentes
+      const fileInput = slot.querySelector('input[type="file"]');
+      const isMainInput = slot.querySelector('input[type="checkbox"][name$="-is_main"]');
+      const hiddenInputs = slot.querySelectorAll('input[type="hidden"]');
+      const deleteCheckbox = slot.querySelector('.delete-checkbox');
+      const deleteCheckboxHTML = deleteCheckbox ? deleteCheckbox.outerHTML : '';
+
+      slot.innerHTML = `
+            <img src="${src}" alt="Preview" class="image-preview">
+            <div class="image-controls">
+                <button type="button" class="btn-main" onclick="setMainImage(${index})">Principal</button>
+                <button type="button" class="btn-remove" onclick="removeImage(${index})">×</button>
+            </div>
+            ${deleteCheckboxHTML}
+        `;
+
+      // Re-adicionar os inputs preservados
+      slot.appendChild(fileInput);
+      slot.appendChild(isMainInput);
+      hiddenInputs.forEach(input => slot.appendChild(input));
+
+      // Se for a primeira imagem e não há principal, definir como principal
+      if (mainImageIndex === null) {
+        setMainImage(index);
+      }
+    }
+
+    window.setMainImage = function (index) {
+      // Remove indicador principal de todas as imagens
+      document.querySelectorAll('.main-image-indicator').forEach(el => el.remove());
+      document.querySelectorAll('.btn-main').forEach(btn => {
+        btn.classList.remove('active');
+        btn.textContent = 'Principal';
+      });
+
+      // Define nova imagem principal
+      const slot = document.querySelector(`[data-form-index="${index}"]`);
+      const isMainInput = slot.querySelector('input[type="checkbox"][name$="-is_main"]');
+      const mainBtn = slot.querySelector('.btn-main'); if (isMainInput) {
+        // Remove principal de todos os outros inputs
+        document.querySelectorAll('input[type="checkbox"][name$="-is_main"]').forEach(input => {
+          input.checked = false;
+        });        // Define como principal
+        isMainInput.checked = true;
+        mainBtn.classList.add('active');
+        mainBtn.textContent = 'Principal';
+
+        // Adiciona indicador visual
+        const indicator = document.createElement('div');
+        indicator.className = 'main-image-indicator';
+        indicator.textContent = 'PRINCIPAL';
+        slot.appendChild(indicator);
+
+        mainImageIndex = index;
+      }
+    };
+
+    window.removeImage = function (index) {
+      const slot = document.querySelector(`[data-form-index="${index}"]`);
+      const input = slot.querySelector('input[type="file"]');
+      const isMainInput = slot.querySelector('input[type="checkbox"][name$="-is_main"]');
+      const deleteCheckbox = slot.querySelector('input[name$="-DELETE"]');
+
+      // Se é uma imagem existente, marca para delete
+      if (deleteCheckbox) {
+        deleteCheckbox.checked = true;
+        slot.style.opacity = '0.5';
+        slot.style.border = '2px solid #dc3545';
+        return;
+      }
+
+      // Reset do slot para novas imagens
+      slot.classList.remove('has-image');
+
+      // Preservar inputs hidden antes de limpar
+      const hiddenInputs = slot.querySelectorAll('input[type="hidden"]');
+
+      slot.innerHTML = `
+            <div class="upload-placeholder">
+                <i>📷</i>
+                <div>Clique para<br>adicionar foto</div>
+            </div>
+        `;
+
+      // Reset dos inputs e re-adicionar
+      input.value = '';
+      isMainInput.checked = false;
+      slot.appendChild(input);
+      slot.appendChild(isMainInput);
+      hiddenInputs.forEach(hiddenInput => slot.appendChild(hiddenInput));
+
+      // Se era a imagem principal, definir nova principal
+      if (mainImageIndex === index) {
+        mainImageIndex = null;
+        // Procurar primeira imagem disponível para ser principal
+        const slotsWithImages = document.querySelectorAll('.image-slot.has-image');
+        if (slotsWithImages.length > 0) {
+          const firstSlotIndex = slotsWithImages[0].getAttribute('data-form-index');
+          setMainImage(parseInt(firstSlotIndex));
+        }
+      }
+
+      // Re-attach event listeners
+      const newInput = slot.querySelector('input[type="file"]');
+      newInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            displayImage(slot, e.target.result, index);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      slot.addEventListener('click', function (e) {
+        if (!e.target.classList.contains('btn-remove') &&
+          !e.target.classList.contains('btn-main') &&
+          !e.target.type === 'checkbox') {
+          newInput.click();
+        }
+      });
+    };
+  });
+</script>
+
 {% endblock %}

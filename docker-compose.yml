@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: carros
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -16,7 +18,6 @@ services:
   app:
     build: .
     restart: always
-    # command: python3 manage.py migrate
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
