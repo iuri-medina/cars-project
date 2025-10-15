@@ -15,7 +15,7 @@ env:
   DOCKER_IMAGE: cars-project
 
 jobs:
-  Job 1: Build e Test
+  # Job 1: Build and Test
   build-and-test:
     name: Build Docker & Run Tests
     runs-on: ubuntu-latest
