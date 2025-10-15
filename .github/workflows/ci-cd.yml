@@ -90,7 +90,7 @@ jobs:
 
       - name: Configure Docker to use gcloud
         run: |
-          gcloud auth configure-docker
+          gcloud auth configure-docker gcr.io
 
       - name: Build and Push Docker image to GCR
         run: |
