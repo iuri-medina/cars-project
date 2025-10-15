@@ -26,17 +26,14 @@ def car_post_save(sender, instance, created, **kwargs):
 def car_post_delete(sender, instance, **kwargs):
     car_inventory_update()
 
-    # Deletar todas as imagens relacionadas ao carro
+    # Clean up physical image files when car is deleted
     for image in instance.car_images.all():
         if image.image:
-            image.image.delete(save=False)  # Remove o arquivo físico
-        image.delete()  # Remove o registro do banco
+            image.image.delete(save=False)
+        image.delete()
 
 @receiver(post_delete, sender=CarImage)
 def car_image_post_delete(sender, instance, **kwargs):
-    """
-    Remove o arquivo de imagem do sistema de arquivos quando 
-    uma CarImage é deletada
-    """
+    """Remove image file from filesystem when CarImage is deleted"""
     if instance.image:
         instance.image.delete(save=False)

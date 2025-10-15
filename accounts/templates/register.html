@@ -2,7 +2,7 @@
 
 {% block content %}
 <style>
-  /* Garantir que o Material Icons seja carregado */
+  /* Ensure material icon is been loaded */
   .material-symbols-outlined {
     font-family: 'Material Symbols Outlined', 'Material Icons', sans-serif;
     font-weight: normal;
@@ -111,12 +111,24 @@
     color: #dc3545;
     font-size: 0.875rem;
     margin-top: 0.25rem;
+    background: #f8d7da;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border-left: 3px solid #dc3545;
   }
 
   .form-errors ul {
     list-style: none;
     padding: 0;
     margin: 0;
+  }
+
+  .form-errors li {
+    margin-bottom: 0.25rem;
+  }
+
+  .form-errors li:last-child {
+    margin-bottom: 0;
   }
 
   .form-help {

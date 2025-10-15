@@ -27,6 +27,7 @@ class Car(models.Model):
     state = models.ForeignKey(State, on_delete=models.PROTECT, related_name='car_state')
     factory_year = models.IntegerField(blank=True, null=True)
     model_year = models.IntegerField(blank=True, null=True)
+    color = models.CharField(max_length=50, blank=True, null=True)
     mileage = models.IntegerField(default=0)
     plate = models.CharField(max_length=10, blank=True, null=True)
     price = models.FloatField(blank=True, null=True)
@@ -36,7 +37,6 @@ class Car(models.Model):
         return self.model
     
     def get_main_image(self):
-        """Retorna a imagem principal do carro ou a primeira disponível"""
         main_image = self.car_images.filter(is_main=True).first()
         if main_image and main_image.image:
             return main_image.image.url
@@ -53,31 +53,26 @@ class CarImage(models.Model):
     is_main = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Imagem de {self.car.model} - Principal: {'Sim' if self.is_main else 'Nao'}"
+        return f"Image of {self.car.model} - Main: {'Yes' if self.is_main else 'No'}"
     
     def save(self, *args, **kwargs):
         if self.image and hasattr(self.image, 'file'):
-            # Verificar se é um arquivo HEIC
+            # Convert HEIC to JPEG for browser compatibility
             if self.image.name.lower().endswith(('.heic', '.heif')):
-                # Converter HEIC para JPEG
                 try:
-                    # Abrir a imagem HEIC
                     img = Image.open(self.image.file)
                     
-                    # Converter para RGB se necessário
                     if img.mode in ('RGBA', 'LA', 'P'):
                         img = img.convert('RGB')
                     
-                    # Redimensionar se for muito grande (opcional)
+                    # Resize if too large
                     if img.width > 1920 or img.height > 1920:
                         img.thumbnail((1920, 1920), Image.Resampling.LANCZOS)
                     
-                    # Salvar como JPEG
                     output = BytesIO()
                     img.save(output, format='JPEG', quality=85, optimize=True)
                     output.seek(0)
                     
-                    # Substituir o arquivo original
                     filename = os.path.splitext(self.image.name)[0] + '.jpg'
                     self.image.save(
                         filename,
@@ -85,8 +80,7 @@ class CarImage(models.Model):
                         save=False
                     )
                 except Exception as e:
-                    print(f"Erro ao converter HEIC: {e}")
-                    # Se falhar, continua com o arquivo original
+                    print(f"Error converting HEIC: {e}")
                     pass
         
         super().save(*args, **kwargs)

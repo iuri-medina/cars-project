@@ -7,7 +7,14 @@ def register_view(request):
         user_form = UserCreationForm(request.POST)
         if user_form.is_valid():
             user_form.save()
-            return redirect('login')
+
+            username = user_form.cleaned_data.get('username')
+            raw_password = user_form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+
+            login(request, user)
+
+            return redirect('cars_list')
     else:
         user_form = UserCreationForm()
     return render(
@@ -17,16 +24,15 @@ def register_view(request):
     )
 
 def login_view(request):
-
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('cars_list')
-        else:
-            login_form = AuthenticationForm()
+        login_form = AuthenticationForm(request, data=request.POST)
+        if login_form.is_valid():
+            username = login_form.cleaned_data.get('username')
+            password = login_form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('cars_list')
     else:
         login_form = AuthenticationForm()
 

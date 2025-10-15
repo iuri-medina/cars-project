@@ -27,13 +27,13 @@ class BaseCarImageFormSet(forms.BaseInlineFormSet):
         has_images = False
         for form in self.forms:
             if form.cleaned_data and not form.cleaned_data.get("DELETE", False):
-                # Verifica se tem imagem (seja nova ou existente)
+                # Check for images (new upload or existing)
                 if form.cleaned_data.get("image") or (hasattr(form, 'instance') and form.instance.pk and form.instance.image):
                     has_images = True
                     if form.cleaned_data.get("is_main", False):
                         mains += 1
         
-        # Só exige imagem principal se houver imagens
+        # Require main image only if there are images
         if has_images:
             if mains == 0:
                 raise ValidationError("Selecione uma imagem principal.")
@@ -44,7 +44,7 @@ class BaseCarImageFormSet(forms.BaseInlineFormSet):
 CarImageFormSet = inlineformset_factory(
     Car, CarImage,
     fields=['image', 'is_main'],
-    extra=10,
+    extra=9,
     can_delete=True,
     formset=BaseCarImageFormSet
 )

@@ -13,8 +13,8 @@ python3 manage.py makemigrations
 echo "running migrations..."
 python3 manage.py migrate --noinput
 
-echo "loading states fixture..." 
-python3 manage.py loaddata cars/fixtures/states.json || echo "fixture já carregada ou não encontrada"
+echo "loading fixtures: states and brands..." 
+python3 manage.py loaddata cars/fixtures/states.json cars/fixtures/brands.json || echo "fixtures já carregadas ou não encontradas"
 
 echo "collecting static files"
 python3 manage.py collectstatic --noinput

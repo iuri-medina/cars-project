@@ -1,188 +1,12 @@
 {% extends "base.html" %}
+{% load static %}
+{% load form_tags %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cars.css' %}">
+{% endblock %}
 
 {% block content %}
-<style>
-    .cars-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-
-    .page-header {
-        text-align: center;
-        margin-bottom: 3rem;
-    }
-
-    .page-title {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 1rem;
-    }
-
-    .page-subtitle {
-        font-size: 1.1rem;
-        color: var(--text-secondary);
-        font-weight: 400;
-    }
-
-    .filters-section {
-        background: white;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
-    }
-
-    .filters-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-    }
-
-    .filter-group label {
-        display: block;
-        font-weight: 500;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-    }
-
-    .filter-group select,
-    .filter-group input {
-        width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 1rem;
-    }
-
-    .cars-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 2rem;
-    }
-
-    .car-card {
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .car-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .car-image {
-        position: relative;
-        width: 100%;
-        aspect-ratio: 16/10;
-        overflow: hidden;
-    }
-
-    .car-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-
-    .car-card:hover .car-image img {
-        transform: scale(1.05);
-    }
-
-    .car-badge {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background: var(--primary-color);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.875rem;
-        font-weight: 600;
-    }
-
-    .car-content {
-        padding: 1.5rem;
-    }
-
-    .car-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        line-height: 1.3;
-    }
-
-    .car-location {
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-
-    .car-specs {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        font-size: 0.875rem;
-        color: var(--text-secondary);
-    }
-
-    .car-spec {
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-    }
-
-    .car-price {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-    }
-
-    .no-cars {
-        text-align: center;
-        padding: 4rem 2rem;
-        color: var(--text-secondary);
-    }
-
-    .no-cars-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-        opacity: 0.5;
-    }
-
-    @media (max-width: 768px) {
-        .cars-container {
-            padding: 1rem;
-        }
-
-        .page-title {
-            font-size: 2rem;
-        }
-
-        .cars-grid {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-
-        .filters-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-</style>
-
-<div class="cars-container">
     <div class="page-header">
         <h1 class="page-title">Encontre seu carro ideal</h1>
         <p class="page-subtitle">Explore nossa seleção de veículos seminovos e usados</p>
@@ -219,10 +43,32 @@
                 </select>
             </div>
 
-            <div class="filter-group" style="display: flex; align-items: end;">
-                <button type="submit" style="width: 100%; padding: 0.75rem; background: var(--primary-color); 
-                        color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                    <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 0.5rem;">search</span>
+            <div class="filter-group">
+                <label for="min_price">Preço mínimo (R$)</label>
+                <input type="text" id="min_price" name="min_price" value="{{ request.GET.min_price }}" placeholder="Ex: 20000">
+            </div>
+
+            <div class="filter-group">
+                <label for="max_price">Preço máximo (R$)</label>
+                <input type="text" id="max_price" name="max_price" value="{{ request.GET.max_price }}" placeholder="Ex: 80000">
+            </div>
+
+            <div class="filter-group">
+                <label for="min_year">Ano de fabricação mínimo</label>
+                <input type="number" id="min_year" name="min_year" value="{{ request.GET.min_year }}" placeholder="Ex: 2015" min="1900" max="2100">
+            </div>
+
+            <div class="filter-group">
+                <label for="max_year">Ano de fabricação máximo</label>
+                <input type="number" id="max_year" name="max_year" value="{{ request.GET.max_year }}" placeholder="Ex: 2023" min="1900" max="2100">
+            </div>
+
+            <div class="filter-group" style="display: flex; gap: 8px; align-items: flex-end;">
+                <button type="button" id="clear-filters-btn" class="btn" style="display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+                    Limpar filtros
+                </button>
+                <button type="submit" class="btn" style="flex: 1 1 auto; display:flex; align-items:center; justify-content:center; gap:0.5rem;">
+                    <span class="material-symbols-outlined">search</span>
                     Buscar
                 </button>
             </div>
@@ -253,11 +99,15 @@
                     </div>
                     <div class="car-spec">
                         <span class="material-symbols-outlined" style="font-size: 1rem;">speed</span>
-                        {{ car.mileage|floatformat:0 }} km
+                        {{ car.mileage|format_number }} km
+                    </div>
+                    <div class="car-spec">
+                        <span class="material-symbols-outlined" style="font-size: 1rem;">palette</span>
+                        {{ car.color|default:"Não informado" }}
                     </div>
                 </div>
 
-                <div class="car-price">R$ {{ car.price | floatformat:0 }}</div>
+                <div class="car-price">R$ {{ car.price|format_number }}</div>
             </div>
         </a>
         {% endfor %}
@@ -276,5 +126,97 @@
         <p>Tente ajustar os filtros de busca ou remover algumas opções.</p>
     </div>
     {% endif %}
-</div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        const minInput = document.getElementById('min_price');
+        const maxInput = document.getElementById('max_price');
+        const minYearInput = document.getElementById('min_year');
+        const maxYearInput = document.getElementById('max_year');
+
+        function formatThousands(value){
+            if(value == null) return '';
+            const digits = String(value).replace(/\D/g,'');
+            if(!digits) return '';
+            return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        function unformat(value){
+            if(!value) return '';
+            return String(value).replace(/\./g, '').replace(/,/g, '.');
+        }
+
+        if(minInput && maxInput){
+            [minInput, maxInput].forEach(input => {
+                input.addEventListener('input', () => {
+                    const raw = input.value.replace(/\D/g,'');
+                    input.value = formatThousands(raw);
+                    input.selectionStart = input.selectionEnd = input.value.length;
+                });
+
+                input.addEventListener('blur', () => {
+                    input.value = formatThousands(input.value);
+                });
+            });
+        }
+
+        const form = document.querySelector('.filters-section form');
+        const submitWrap = form.querySelector('button[type="submit"]').parentNode;
+        const error = document.createElement('div');
+        error.className = 'filter-error';
+        error.style.color = '#dc3545';
+        error.style.fontSize = '0.9rem';
+        error.style.marginTop = '0.5rem';
+        error.style.display = 'none';
+        submitWrap.appendChild(error);
+
+        form.addEventListener('submit', function(e){
+            error.style.display = 'none';
+
+            let minVal = null, maxVal = null;
+            if(minInput && maxInput){
+                const minRaw = unformat(minInput.value);
+                const maxRaw = unformat(maxInput.value);
+                const minDigits = minRaw ? String(minRaw).replace(/[^0-9\-\.]/g,'') : '';
+                const maxDigits = maxRaw ? String(maxRaw).replace(/[^0-9\-\.]/g,'') : '';
+                minVal = minDigits ? parseFloat(minDigits) : null;
+                maxVal = maxDigits ? parseFloat(maxDigits) : null;
+                if(minVal != null && maxVal != null && minVal > maxVal){
+                    e.preventDefault();
+                    error.textContent = 'Preço mínimo não pode ser maior que o preço máximo.';
+                    error.style.display = 'block';
+                    return false;
+                }
+
+                if(minInput) minInput.value = minVal != null ? String(Math.round(minVal)) : '';
+                if(maxInput) maxInput.value = maxVal != null ? String(Math.round(maxVal)) : '';
+            }
+
+            if(minYearInput && maxYearInput){
+                const yMin = minYearInput.value ? parseInt(minYearInput.value, 10) : null;
+                const yMax = maxYearInput.value ? parseInt(maxYearInput.value, 10) : null;
+                if(yMin != null && yMax != null && yMin > yMax){
+                    e.preventDefault();
+                    error.textContent = 'Ano de fabricação mínimo não pode ser maior que o ano máximo.';
+                    error.style.display = 'block';
+                    return false;
+                }
+            }
+        });
+
+        const clearBtn = document.getElementById('clear-filters-btn');
+        if(clearBtn){
+            clearBtn.addEventListener('click', function(){
+                const fields = ['search_model','search_brand','search_state','min_price','max_price','min_year','max_year'];
+                fields.forEach(name => {
+                    const el = document.querySelector('[name="'+name+'"]');
+                    if(el){
+                        if(el.tagName.toLowerCase() === 'select') el.selectedIndex = 0;
+                        else el.value = '';
+                    }
+                });
+                form.submit();
+            });
+        }
+    });
+    </script>
 {% endblock %}
