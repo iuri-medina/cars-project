@@ -108,12 +108,24 @@ jobs:
           gcloud compute ssh $GCE_INSTANCE \
             --zone=$GCE_INSTANCE_ZONE \
             --command="
-              # Pull latest code
+              # Add user to docker group (if not already added)
+              sudo usermod -aG docker \$USER 2>/dev/null || true
+              
+              # Navigate to project directory
               cd /opt/cars-project || exit 1
+              
+              # Fix directory and .env permissions
+              sudo chown -R \$USER:\$USER /opt/cars-project
+              sudo chmod 644 /opt/cars-project/.env 2>/dev/null || true
+              
+              # Pull latest code
               git pull origin main
               
+              # Authenticate Docker with Artifact Registry
+              gcloud auth configure-docker us-docker.pkg.dev --quiet
+              
               # Pull latest Docker image
-              docker pull $REGISTRY/$PROJECT_ID/$DOCKER_IMAGE:latest
+              docker pull $REGISTRY/$PROJECT_ID/$REPOSITORY/$DOCKER_IMAGE:latest
               
               # Stop current containers
               docker compose down
