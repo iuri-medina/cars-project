@@ -129,20 +129,21 @@ jobs:
               # Authenticate Docker with Artifact Registry
               gcloud auth configure-docker us-docker.pkg.dev --quiet
               
-              # Use sg to run docker commands with docker group (no need to logout/login)
-              sg docker -c '
-                docker pull $REGISTRY/$PROJECT_ID/$REPOSITORY/$DOCKER_IMAGE:latest
-                docker compose down
-                docker compose up -d
-              '
+              # Use sg to run docker commands with docker group (preserving working directory)
+              sg docker -c 'cd /opt/cars-project && docker pull $REGISTRY/$PROJECT_ID/$REPOSITORY/$DOCKER_IMAGE:latest'
+              sg docker -c 'cd /opt/cars-project && docker compose down'
+              sg docker -c 'cd /opt/cars-project && docker compose up -d'
               
               # Wait for initialization
               echo 'Waiting for entrypoint to complete initialization...'
               sleep 15
               
               # Verify services are running
-              sg docker -c 'docker compose ps'
+              sg docker -c 'cd /opt/cars-project && docker compose ps'
               
+              # Clean up old images
+              sg docker -c 'docker image prune -af'
+              "
               # Clean up old images
               docker image prune -af
             "
