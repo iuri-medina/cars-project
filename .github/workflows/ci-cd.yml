@@ -112,7 +112,20 @@ jobs:
               
               echo "=== Setting up environment ==="
               sudo usermod -aG docker $USER 2>/dev/null || true
-              sudo mkdir -p /opt/cars-project
+              
+              echo "=== Setting up project directory ==="
+              if [ -d /opt/cars-project/cars-project ]; then
+                echo "Fixing nested directory structure..."
+                sudo rm -rf /opt/cars-project-backup 2>/dev/null || true
+                sudo mv /opt/cars-project /opt/cars-project-backup
+                sudo mkdir -p /opt/cars-project
+                sudo mv /opt/cars-project-backup/cars-project/* /opt/cars-project/
+                sudo mv /opt/cars-project-backup/cars-project/.* /opt/cars-project/ 2>/dev/null || true
+                sudo rm -rf /opt/cars-project-backup
+              elif [ ! -d /opt/cars-project ]; then
+                sudo mkdir -p /opt/cars-project
+              fi
+              
               sudo chown -R $USER:$USER /opt/cars-project
               
               echo "=== Updating repository ==="
@@ -124,7 +137,7 @@ jobs:
               fi
               
               echo "=== Configuring permissions ==="
-              [ -f .env ] && sudo chmod 644 .env || echo "No .env file found"
+              [ -f .env ] && sudo chmod 644 .env || echo "WARNING: No .env file found - application may not start correctly"
               
               echo "=== Authenticating with Artifact Registry ==="
               gcloud auth configure-docker us-docker.pkg.dev --quiet
