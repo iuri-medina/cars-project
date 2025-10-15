@@ -37,37 +37,37 @@ jobs:
 
       - name: Build Docker images
         run: |
-          docker-compose build
+          docker compose build
 
       - name: Start services
         run: |
-          docker-compose up -d
+          docker compose up -d
           echo "Waiting for services to be ready..."
           sleep 30
 
       - name: Check container status
         run: |
-          docker-compose ps
-          docker-compose logs app
+          docker compose ps
+          docker compose logs app
 
       - name: Wait for entrypoint to complete
         run: |
           echo "Entrypoint is running migrations and collectstatic..."
           sleep 10
-          docker-compose logs app | grep -i "starting gunicorn" || echo "Still initializing..."
+          docker compose logs app | grep -i "starting gunicorn" || echo "Still initializing..."
 
       - name: Run tests
         run: |
-          docker-compose exec -T app python manage.py test || true
+          docker compose exec -T app python manage.py test || true
 
       - name: Check app health
         run: |
-          docker-compose exec -T app python manage.py check
+          docker compose exec -T app python manage.py check
 
       - name: Stop services
         if: always()
         run: |
-          docker-compose down -v
+          docker compose down -v
 
   # Job 2: Deploy to Google Cloud (apenas em push para main)
   deploy:
@@ -111,17 +111,17 @@ jobs:
               docker pull $REGISTRY/$PROJECT_ID/$DOCKER_IMAGE:latest
               
               # Stop current containers
-              docker-compose down
+              docker compose down
               
               # Start new containers (entrypoint.sh will handle migrations and collectstatic)
-              docker-compose up -d
+              docker compose up -d
               
               # Wait for initialization
               echo 'Waiting for entrypoint to complete initialization...'
               sleep 15
               
               # Verify services are running
-              docker-compose ps
+              docker compose ps
               
               # Clean up old images
               docker image prune -af
@@ -131,7 +131,7 @@ jobs:
         run: |
           gcloud compute ssh $GCE_INSTANCE \
             --zone=$GCE_INSTANCE_ZONE \
-            --command="docker-compose ps"
+            --command="docker compose ps"
 
       - name: Notify deployment success
         if: success()
