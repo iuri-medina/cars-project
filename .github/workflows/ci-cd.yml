@@ -10,8 +10,8 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCE_INSTANCE: ${{ secrets.GCE_INSTANCE_NAME }}
   GCE_INSTANCE_ZONE: ${{ secrets.GCE_INSTANCE_ZONE }}
-  DOCKER_IMAGE: garimpoauto
-  REGISTRY: gcr.io
+  REPOSITORY: docker-repo
+  DOCKER_IMAGE: cars-project
 
 jobs:
   # Job 1: Build e Test
@@ -88,16 +88,16 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           export_default_credentials: true
 
-      - name: Configure Docker to use gcloud
+      - name: Configure Docker to use gcloud (Artifact Registry)
         run: |
-          gcloud auth configure-docker gcr.io
+          gcloud auth configure-docker us-docker.pkg.dev --quiet
 
       - name: Build and Push Docker image to GCR
         run: |
-          docker build -t $REGISTRY/$PROJECT_ID/$DOCKER_IMAGE:$GITHUB_SHA \
-                       -t $REGISTRY/$PROJECT_ID/$DOCKER_IMAGE:latest .
-          docker push $REGISTRY/$PROJECT_ID/$DOCKER_IMAGE:$GITHUB_SHA
-          docker push $REGISTRY/$PROJECT_ID/$DOCKER_IMAGE:latest
+          docker build -t $REGISTRY/$PROJECT_ID/$REPOSITORY/$DOCKER_IMAGE:$GITHUB_SHA \
+            -t $REGISTRY/$PROJECT_ID/$REPOSITORY/$DOCKER_IMAGE:latest .
+          docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/$DOCKER_IMAGE:$GITHUB_SHA
+          docker push $REGISTRY/$PROJECT_ID/$REPOSITORY/$DOCKER_IMAGE:latest
 
       - name: Deploy to Google Compute Engine
         run: |
