@@ -10,6 +10,7 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCE_INSTANCE: ${{ secrets.GCE_INSTANCE_NAME }}
   GCE_INSTANCE_ZONE: ${{ secrets.GCE_INSTANCE_ZONE }}
+  REGISTRY: us-docker.pkg.dev
   REPOSITORY: docker-repo
   DOCKER_IMAGE: cars-project
 
