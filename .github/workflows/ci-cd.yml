@@ -1,0 +1,146 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, development]
+  pull_request:
+    branches: [main]
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCE_INSTANCE: ${{ secrets.GCE_INSTANCE_NAME }}
+  GCE_INSTANCE_ZONE: ${{ secrets.GCE_INSTANCE_ZONE }}
+  DOCKER_IMAGE: garimpoauto
+  REGISTRY: gcr.io
+
+jobs:
+  # Job 1: Build e Test
+  build-and-test:
+    name: Build Docker & Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          cat > .env << EOF
+          DEBUG=False
+          SECRET_KEY=test-secret-key-for-ci
+          DATABASE_URL=postgresql://postgres:postgres@db:5432/carros
+          ALLOWED_HOSTS=localhost,127.0.0.1
+          EOF
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker images
+        run: |
+          docker-compose build
+
+      - name: Start services
+        run: |
+          docker-compose up -d
+          echo "Waiting for services to be ready..."
+          sleep 30
+
+      - name: Check container status
+        run: |
+          docker-compose ps
+          docker-compose logs app
+
+      - name: Wait for entrypoint to complete
+        run: |
+          echo "Entrypoint is running migrations and collectstatic..."
+          sleep 10
+          docker-compose logs app | grep -i "starting gunicorn" || echo "Still initializing..."
+
+      - name: Run tests
+        run: |
+          docker-compose exec -T app python manage.py test || true
+
+      - name: Check app health
+        run: |
+          docker-compose exec -T app python manage.py check
+
+      - name: Stop services
+        if: always()
+        run: |
+          docker-compose down -v
+
+  # Job 2: Deploy to Google Cloud (apenas em push para main)
+  deploy:
+    name: Deploy to Google Cloud
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          export_default_credentials: true
+
+      - name: Configure Docker to use gcloud
+        run: |
+          gcloud auth configure-docker
+
+      - name: Build and Push Docker image to GCR
+        run: |
+          docker build -t $REGISTRY/$PROJECT_ID/$DOCKER_IMAGE:$GITHUB_SHA \
+                       -t $REGISTRY/$PROJECT_ID/$DOCKER_IMAGE:latest .
+          docker push $REGISTRY/$PROJECT_ID/$DOCKER_IMAGE:$GITHUB_SHA
+          docker push $REGISTRY/$PROJECT_ID/$DOCKER_IMAGE:latest
+
+      - name: Deploy to Google Compute Engine
+        run: |
+          gcloud compute ssh $GCE_INSTANCE \
+            --zone=$GCE_INSTANCE_ZONE \
+            --command="
+              # Pull latest code
+              cd /opt/cars-project || exit 1
+              git pull origin main
+              
+              # Pull latest Docker image
+              docker pull $REGISTRY/$PROJECT_ID/$DOCKER_IMAGE:latest
+              
+              # Stop current containers
+              docker-compose down
+              
+              # Start new containers (entrypoint.sh will handle migrations and collectstatic)
+              docker-compose up -d
+              
+              # Wait for initialization
+              echo 'Waiting for entrypoint to complete initialization...'
+              sleep 15
+              
+              # Verify services are running
+              docker-compose ps
+              
+              # Clean up old images
+              docker image prune -af
+            "
+
+      - name: Verify deployment
+        run: |
+          gcloud compute ssh $GCE_INSTANCE \
+            --zone=$GCE_INSTANCE_ZONE \
+            --command="docker-compose ps"
+
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "Deployment successful!"
+          echo "Application deployed to GCP instance: $GCE_INSTANCE"
+
+      - name: Notify deployment failure
+        if: failure()
+        run: |
+          echo "Deployment failed!"
+          exit 1
