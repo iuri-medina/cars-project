@@ -111,34 +111,37 @@ jobs:
               # Add user to docker group (if not already added)
               sudo usermod -aG docker \$USER 2>/dev/null || true
               
-              # Navigate to project directory
-              cd /opt/cars-project || exit 1
-              
-              # Fix directory and .env permissions
+              # Create project directory if it doesn't exist
+              sudo mkdir -p /opt/cars-project
               sudo chown -R \$USER:\$USER /opt/cars-project
-              sudo chmod 644 /opt/cars-project/.env 2>/dev/null || true
+              cd /opt/cars-project
               
-              # Pull latest code
-              git pull origin main
+              # Clone or update repository
+              if [ -d .git ]; then
+                git pull origin main
+              else
+                git clone https://github.com/iuri-medina/cars-project.git .
+              fi
+              
+              # Fix .env permissions if it exists
+              [ -f .env ] && sudo chmod 644 .env || true
               
               # Authenticate Docker with Artifact Registry
               gcloud auth configure-docker us-docker.pkg.dev --quiet
               
-              # Pull latest Docker image
-              docker pull $REGISTRY/$PROJECT_ID/$REPOSITORY/$DOCKER_IMAGE:latest
-              
-              # Stop current containers
-              docker compose down
-              
-              # Start new containers (entrypoint.sh will handle migrations and collectstatic)
-              docker compose up -d
+              # Use sg to run docker commands with docker group (no need to logout/login)
+              sg docker -c '
+                docker pull $REGISTRY/$PROJECT_ID/$REPOSITORY/$DOCKER_IMAGE:latest
+                docker compose down
+                docker compose up -d
+              '
               
               # Wait for initialization
               echo 'Waiting for entrypoint to complete initialization...'
               sleep 15
               
               # Verify services are running
-              docker compose ps
+              sg docker -c 'docker compose ps'
               
               # Clean up old images
               docker image prune -af
