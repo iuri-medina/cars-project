@@ -3,3 +3,8 @@ venv
 media
 staticfiles
 postgres_data
+*.pyc
+__pycache__/
+*.log
+.env
+env
