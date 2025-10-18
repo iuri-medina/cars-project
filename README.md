@@ -31,6 +31,19 @@ Sistema de gerenciamento de anúncios de veículos desenvolvido com Django, Post
 
 O **GarimpoAuto** é uma plataforma para gerenciamento de anúncios de veículos, permitindo cadastro, edição, busca e visualização de carros feita para fins de estudos. O sistema utiliza arquitetura moderna com containers Docker, deploy automatizado e infraestrutura escalável na nuvem.
 
+<img width="1439" height="772" alt="tela1" src="https://github.com/user-attachments/assets/c068b9e2-8795-4f5e-b2d8-29d72a1ab9b0" />
+
+<img width="1440" height="777" alt="Captura de Tela 2025-10-17 às 23 05 02" src="https://github.com/user-attachments/assets/8a0e937e-8494-41e1-a1af-f356178fba31" />
+
+<img width="1440" height="777" alt="Captura de Tela 2025-10-17 às 23 05 24" src="https://github.com/user-attachments/assets/7c720c21-5c32-4759-afdf-ba2c0f7c2b25" />
+
+<img width="1440" height="778" alt="Captura de Tela 2025-10-17 às 23 05 45" src="https://github.com/user-attachments/assets/ce8ca60e-344a-4fa5-b25e-4cbfd2995751" />
+
+<img width="1440" height="777" alt="Captura de Tela 2025-10-17 às 23 06 38" src="https://github.com/user-attachments/assets/3c987fa4-a5bd-4889-9f89-9590853e5dc4" />
+
+<img width="1440" height="779" alt="Captura de Tela 2025-10-17 às 23 06 48" src="https://github.com/user-attachments/assets/76df6ce6-8115-4280-a2e4-623ba8fe779d" />
+
+
 **Características principais:**
 
 - Totalmente containerizado com Docker Compose v2
